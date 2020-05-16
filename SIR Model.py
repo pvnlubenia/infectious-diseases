@@ -8,8 +8,13 @@
 
 ### Needed libraries ###
 
+# For assigning agents to random locations and for choosing random agents
 import random as rd
+
+# For visualizing the state of the agents using plot
 import matplotlib.pyplot as plt
+
+# For checking if a filename already exists, to avoid overwriting files
 import os
 
 
@@ -55,7 +60,8 @@ def create_agents():
 ### Everyone moves to a random location ###
 
 ## Scenario 1: Normal day
-        
+
+## Comment scenario not used        
 # def move():
 
 #     # Agent moves to a random location
@@ -85,7 +91,11 @@ def infect():
 
     # Create list of neighbors of infectious
     for agent_ in infectious_list:
+        
+        # Create list of neighbors within the radius specified
         neighbors = [neighbor for neighbor in agents_list if (neighbor.x - agent_.x)**2 + (neighbor.y - agent_.y)**2 <= infectious_radius**2]
+        
+        # Remove person himself from list of neighbors
         neighbors.remove(agent_)
 
         # Susceptible neighbors become infectious (recovered individuals are immune)
@@ -105,7 +115,7 @@ def monitor():
             agent_.days_infectious += 1
 
             # Infectious people who reach the end of infectious period recover
-            if agent_.days_infectious == days_to_recover + 1:
+            if agent_.days_infectious > days_to_recover:
                 agent_.state = 2
 
 
@@ -220,6 +230,9 @@ def trend():
 
 ### Simulation ###
 
+# Comment all visualize() for faster simulation
+# But replace with count()
+
 ## Day 0
 
 # Start day count
@@ -267,6 +280,7 @@ for agent_ in rd.sample([agent_ for agent_ in agents_list if agent_.state != 1],
     agent_.state = 2
 
 visualize()
+# count()
 
 
 ## Day 1 onward
@@ -287,12 +301,14 @@ for i in range(runs):
     
     # Visualize new positions
     visualize()
+    # count()
     
     # Infections start after the movement
     infect()
     
     # Visualize
     visualize()
+    # count()
 
     # Update lists
     days.append(day_count)
@@ -304,6 +320,7 @@ for i in range(runs):
     if I_count == 0:
         break
 
+# Plot trend
 trend()
 
 ####### end of code #######

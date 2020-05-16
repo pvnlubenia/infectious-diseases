@@ -9,8 +9,13 @@
 
 ### Needed libraries ###
 
+# For assigning agents to random locations and for choosing random agents
 import random as rd
+
+# For visualizing the state of the agents using plot
 import matplotlib.pyplot as plt
+
+# For checking if a filename already exists, to avoid overwriting files
 import os
 
 
@@ -59,7 +64,8 @@ def create_agents():
 ### Everyone moves to a random location ###
 
 ## Scenario 1: Normal day
-        
+
+# Comment scenario not used
 # def move():
 
 #     # Everyone moves to a random location
@@ -89,7 +95,11 @@ def infect():
 
     # Create list of neighbors of infectious
     for agent_ in infectious_list:
+        
+        # Create list of neighbors within the radius specified
         neighbors = [neighbor for neighbor in agents_list if (neighbor.x - agent_.x)**2 + (neighbor.y - agent_.y)**2 <= infectious_radius**2]
+        
+        # Remove person himself from list of neighbors
         neighbors.remove(agent_)
 
         # Susceptible neighbors become exposed (recovered individuals are immune)
@@ -109,7 +119,7 @@ def monitor():
             agent_.days_exposed += 1
 
             # Exposed people who reach the end of incubation period become infectious
-            if agent_.days_exposed == incubation_period + 1:
+            if agent_.days_exposed > incubation_period:
                 agent_.state = 2
     
     # Add count for number of days an infectious person has been infectious
@@ -118,7 +128,7 @@ def monitor():
             agent_.days_infectious += 1
 
             # Infectious people who reach the end of infectious period recover
-            if agent_.days_infectious == days_to_recover + 1:
+            if agent_.days_infectious > days_to_recover:
                 agent_.state = 3
 
 
@@ -130,10 +140,7 @@ def monitor():
 def count():
     
     # Allow the following variables to be accessed outside the function
-    global S_count, I_count, R_count
-    
-    # SEIR
-    global E_count
+    global S_count, E_count, I_count, R_count
     
     # Count susceptible
     S_count = len([agent_ for agent_ in agents_list if agent_.state == 0])
@@ -186,7 +193,7 @@ def visualize():
     ax.set_xticks([])
     ax.set_yticks([])
 
-    # SEIR: Prepare format of file name
+    # Prepare format of file name
     filename = 'SEIR'
     
     # Starting filename count
@@ -244,7 +251,10 @@ def trend():
 
 ### Simulation ###
 
-## Day 0
+# Comment all visualize() for faster simulation
+# But replace with count()
+
+## Initial day
 
 # Start day count
 day_count = 0
@@ -261,7 +271,7 @@ n_agents = S_initial + E_initial + I_initial + R_initial
 # Infectious radius
 infectious_radius = 0.025
 
-# SEIR: Incubation period
+# Incubation period
 incubation_period = 3
 
 # Number of days of infectiousness
@@ -303,9 +313,10 @@ for agent_ in rd.sample([agent_ for agent_ in agents_list if agent_.state != 1 a
     agent_.state = 3
 
 visualize()
+# count()
 
 
-## Day 1 onward
+## Succeeding days
 
 # Number of runs
 runs = 100
@@ -323,12 +334,14 @@ for i in range(runs):
     
     # Visualize new positions
     visualize()
+    # count()
     
     # Infections start after the movement
     infect()
     
     # Visualize
     visualize()
+    # count()
 
     # Update lists
     days.append(day_count)
@@ -341,6 +354,7 @@ for i in range(runs):
     if E_count == 0 and I_count == 0:
         break
 
+# Plot trend
 trend()
 
 ####### end of code #######
